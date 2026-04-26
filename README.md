@@ -54,7 +54,7 @@ This project provided hands-on experience with low-level embedded systems progra
 
 ## Author
 
-Developed by [Your Name]
+Developed by [GAYATHRI K]
 
 ## Tags
 
