@@ -1,8 +1,0 @@
-C:/Users/Netcom/Documents/PERSONAL_DOCUMENT/BARE_METAL_DOCUMENTS/chip_register/Include/core_cm4.h:1814:22:__NVIC_SetPriority	2
-../Src/OSKernal.c:26:9:osKernelAddThreads	3
-../Src/OSKernal.c:105:6:OsKernal_init	1
-../Src/OSKernal.c:111:6:OsKernalLaunch	1
-../Src/OSKernal.c:132:6:osSelectNextTask	3
-../Src/OSKernal.c:176:29:PendSV_Handler	1
-../Src/OSKernal.c:201:6:SysTick_Handler	1
-../Src/OSKernal.c:207:29:osScheduleLaunch	1

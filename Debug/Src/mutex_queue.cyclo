@@ -1,5 +1,0 @@
-../Src/mutex_queue.c:16:6:mutex_init	1
-../Src/mutex_queue.c:24:6:mutex_enqueue	3
-../Src/mutex_queue.c:46:6:mutex_dequeue	3
-../Src/mutex_queue.c:60:6:mutex_lock	2
-../Src/mutex_queue.c:83:6:mutex_unlock	3
