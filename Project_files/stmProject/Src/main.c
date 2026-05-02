@@ -20,9 +20,10 @@
 #include "OSKernal.h"
 #include"led.h"
 #include"uart.h"
+#include "mutex_queue.h"
 
 volatile int tick_time;
-
+mutex_t key;
 
 void task0(void){
 
@@ -41,14 +42,33 @@ void task0(void){
 
 void task1(void){
     while(1){
+    	mutex_lock(&key);
     	uart_write('g');
+    	uart_write('a');
+    	uart_write('y');
+    	uart_write('a');
+    	uart_write('t');
+    	uart_write('h');
+    	uart_write('r');
+    	uart_write('i');
+
+    	mutex_unlock(&key);
     	for(volatile int i=0;i<300000;i++);
     }
 }
 
 void task2(void){
-    while(1){
-    }
+	 while(1){
+	    	mutex_lock(&key);
+	    	uart_write('h');
+	    	uart_write('a');
+	    	uart_write('p');
+	    	uart_write('p');
+	    	uart_write('y');
+	    	uart_write(' ');
+	    	mutex_unlock(&key);
+	    	for(volatile int i=0;i<300000;i++);
+	    }
 }
 int main()
 {
