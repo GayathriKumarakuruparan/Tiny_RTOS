@@ -1,89 +1,99 @@
-/*
- * mutex_queue.c
- *
- *  Created on: Apr 30, 2026
- *      Author: Netcom
- */
+#include "stm32f401xe.h"
+#include "mutex_queue.h"
+#include "OSKernal.h"
 
-
-#include"stm32f401xe.h"
-#include"mutex_queue.h"
-#include"OSKernal.h"
-
-
-
-
+/* -------------------------
+   Init mutex
+   ------------------------- */
 void mutex_init(mutex_t *m)
 {
-	m->locked=0;
-	m->owner=0;
-	m->head=NULL;
-	m->tail=NULL;
+    m->locked = 0;
+    m->owner  = NULL;
+    m->head   = NULL;
+    m->tail   = NULL;
 }
 
-void mutex_enqueue(mutex_t *m,tcb *task){
+/* -------------------------
+   Add blocked task to queue
+   ------------------------- */
+void mutex_enqueue(mutex_t *m, tcb *task)
+{
+    if(task == NULL)
+        return;
 
-	task->waiting_task=NULL;
+    task->waiting_task = NULL;
 
-	if(!task)
-	{
-		return;
-	}
-
-	if(m->head==NULL)
-	{
-		m->head=task;
-		m->tail=task;
-	}
-	else
-	{
-		m->tail->waiting_task=task;
-		m->tail=task;
-	}
-
+    if(m->head == NULL)
+    {
+        m->head = task;
+        m->tail = task;
+    }
+    else
+    {
+        m->tail->waiting_task = task;
+        m->tail = task;
+    }
 }
 
-tcb *mutex_dequeue(mutex_t *m){
+/* -------------------------
+   Remove first waiting task
+   ------------------------- */
+tcb *mutex_dequeue(mutex_t *m)
+{
+    tcb *task = m->head;
 
-	tcb *task= m->head;
+    if(task != NULL)
+    {
+        m->head = task->waiting_task;
+        task->waiting_task = NULL;
 
-	if(task){
-		m->head=task->waiting_task;
-		if(m->head==NULL)
-		{
-			m->tail=NULL;
-		}
-	}
-	return task;
+        if(m->head == NULL)
+        {
+            m->tail = NULL;
+        }
+    }
+
+    return task;
 }
 
+/* -------------------------
+   Lock mutex
+   ------------------------- */
 void mutex_lock(mutex_t *m)
 {
     __disable_irq();
 
+    /* free mutex */
     if(m->locked == 0)
     {
         m->locked = 1;
-        m->owner = currentptr;
+        m->owner  = currentptr;
+
         __enable_irq();
         return;
     }
 
-    // block task
+    /* already locked -> block current task */
     currentptr->state = BLOCKED;
+
     mutex_enqueue(m, currentptr);
 
     __enable_irq();
 
+    /* immediate context switch */
+    SCB->ICSR |= (1U << 28);
+
 
 }
 
-
-
+/* -------------------------
+   Unlock mutex
+   ------------------------- */
 void mutex_unlock(mutex_t *m)
 {
     __disable_irq();
 
+    /* only owner can unlock */
     if(m->owner != currentptr)
     {
         __enable_irq();
@@ -92,18 +102,19 @@ void mutex_unlock(mutex_t *m)
 
     tcb *next = mutex_dequeue(m);
 
-    if(next)
+    if(next != NULL)
     {
+        /* give mutex directly to next waiting task */
         next->state = READY;
-        m->owner = next;
-        m->locked = 1;
+        m->owner    = next;
+        m->locked   = 1;
     }
     else
     {
+        /* nobody waiting */
         m->locked = 0;
-        m->owner = NULL;
+        m->owner  = NULL;
     }
 
     __enable_irq();
 }
-
