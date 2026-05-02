@@ -1,0 +1,2 @@
+C:/Users/Netcom/Documents/PERSONAL_DOCUMENT/BARE_METAL_DOCUMENTS/chip_register/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
+../Src/timer.c:12:6:timer_init	8	static
